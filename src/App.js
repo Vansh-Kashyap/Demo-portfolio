@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -16,6 +16,27 @@ function App() {
   useEffect(() => {
     AOS.init({ duration: 1000, once: true });
   }, []);
+
+  const navRef = useRef();
+  const hamburgerRef = useRef();
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        menuOpen &&
+        navRef.current &&
+        !navRef.current.contains(event.target) &&
+        !hamburgerRef.current.contains(event.target)
+      ) {
+        setMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuOpen]);
+
+
 
 
 
@@ -61,16 +82,17 @@ function App() {
         <div className="header-inner">
           <div className="logo">RS</div>
 
-          <nav className={menuOpen ? "nav open" : "nav"}>
+          <nav ref={navRef} className={menuOpen ? "nav open" : "nav"}>
             <a href="#about">About</a>
             <a href="#experience">Experience</a>
             <a href="#events">Events</a>
             <a href="#contact" className="nav-btn">Book</a>
           </nav>
 
-          <div className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
-            ☰
+          <div ref={hamburgerRef} className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? "✕" : "☰"}
           </div>
+
         </div>
       </header>
       <section className="video-hero">
